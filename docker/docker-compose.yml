@@ -11,8 +11,11 @@ services:
       - "3173:3173"
     environment:
       - NODE_ENV=production
-    env_file:
-      - .env.server
+    # Mount the .env file where the app reads it (/app/.env)
+    volumes:
+      - ./../docker/.env.server:/app/.env:ro
+    depends_on:
+      - mongodb
     restart: unless-stopped
 
   client:
@@ -31,14 +34,21 @@ services:
       - .env.client
     restart: unless-stopped
 
-  # Optional: MongoDB if you disable SKIP_DATABASE
+  # MongoDB
   mongodb:
     image: mongo:7
     container_name: kaetram-mongodb
+    environment:
+      - MONGO_INITDB_DATABASE=kaetram_prod
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.runCommand({ ping: 1 })"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
 volumes:
