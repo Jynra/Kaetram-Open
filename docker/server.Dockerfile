@@ -1,8 +1,11 @@
 # Server image for Kaetram (port 3173)
-FROM node:20-alpine
+# Use a glibc-based image (uWebSockets prebuilt binaries require glibc)
+FROM node:20-bookworm-slim
 
-# Build deps for uWebSockets and native modules
-RUN apk add --no-cache python3 make g++ git
+# Build deps for native modules
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 make g++ git ca-certificates curl \
+ && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
