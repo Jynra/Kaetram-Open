@@ -36,7 +36,7 @@ services:
 
   # MongoDB
   mongodb:
-    image: mongo:7
+    image: mongo:4.4
     container_name: kaetram-mongodb
     environment:
       - MONGO_INITDB_DATABASE=kaetram_prod
@@ -45,7 +45,7 @@ services:
     volumes:
       - mongodb_data:/data/db
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.runCommand({ ping: 1 })"]
+      test: ["CMD", "mongo", "--eval", "db.runCommand({ ping: 1 })"]
       interval: 10s
       timeout: 5s
       retries: 5
