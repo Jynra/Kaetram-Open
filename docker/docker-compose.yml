@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: ..
+      dockerfile: docker/server.Dockerfile
+    image: kaetram-server:local
+    container_name: kaetram-server
+    ports:
+      - "3173:3173"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env.server
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ..
+      dockerfile: docker/client.Dockerfile
+    image: kaetram-client:local
+    container_name: kaetram-client
+    depends_on:
+      - server
+    ports:
+      - "3174:3174"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env.client
+    restart: unless-stopped
+
+  # Optional: MongoDB if you disable SKIP_DATABASE
+  mongodb:
+    image: mongo:7
+    container_name: kaetram-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:
+
